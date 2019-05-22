@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'dva'
 import ProductList from '../components/ProductList'
+import {Button} from 'antd'
 
 const Products = ({dispatch, products}) => {
 
@@ -10,11 +11,20 @@ const Products = ({dispatch, products}) => {
       payload: id
     })
   }
+  
+  function addList() {
+    dispatch({
+      type: 'products/add',
+      payload: {name:'michong',age:23}
+    })
+  }
 
   return (
     <div>
       <h2>List of Products</h2>
-      <ProductList onDelete={handleDelete} products={products} />
+      <Button onClick={addList}>添加</Button>
+      <ProductList onDelete={handleDelete}  products={products} />
+
     </div>
   )
 }
