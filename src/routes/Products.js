@@ -8,14 +8,14 @@ class Products extends Component {
   // static defaultProps {
   //
   // }
-  constructor(props) {
-    super(props);
-    this.state = {}
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {}
+  // }
 
   componentDidMount() {
     const {dispatch} = this.props;
-    dispatch({type: 'products/init',total:55})
+    dispatch({type: 'products/init'})
   }
 
   handleDelete = (id) => {
@@ -23,7 +23,7 @@ class Products extends Component {
     dispatch({
       type: 'products/delete',
       payload: id,
-      name:'michong'
+      name: 'michong'
     })
   }
 
@@ -34,20 +34,26 @@ class Products extends Component {
   }
 
   render() {
-    const {products} = this.props;
-    console.log('state:'+this.state)
+    const {products, total, current} = this.props;
+
     return (
       <div>
         <h2>List of Products</h2>
         <Button onClick={this.addList}>添加</Button>
-        <ProductList onDelete={this.handleDelete} products={products}/>
+        <ProductList onDelete={this.handleDelete} products={products} total={total} current={current}/>
 
       </div>
     )
   }
 }
 
+function mapStateToProps(state) {
+  const {products, total, current} = state.products;
+  return {
+    products,
+    total,
+    current,
+  };
+}
 
-export default connect(({products}) => ({
-  products,
-}))(Products)
+export default connect(mapStateToProps)(Products)
