@@ -1,4 +1,4 @@
-import {request} from "../utils/request";
+import {getList} from '../services/listServices'
 
 export default {
   //namespace表示全局state上的key
@@ -7,26 +7,39 @@ export default {
   state: [],
 
   effects: {
-    * addList(action, {take, put}) {
-      // eslint-disable-next-line no-undef
-      yield  put({type: 'res'})
+    * init(state, {put, call}) {
+      const res = yield call(getList)
+      console.log(state)
+      yield put({type: "initData", payload:  res.data,total:res.count})
+    },
+
+    * addData(_, {put, call}) {
+      console.log('正在请求数据')
+      yield put({type: 'addList'})
+    },
+
+    * delete(action, {put}) {
+      console.log(action)
+      const {payload, name} = action
+      console.log(`payload:${payload}===name:${name}`)
+      yield put({type: 'deleteData',payload})
     }
   },
 
   reducers: {
-    'delete'(state, {payload: id}) {
+    deleteData(state, {payload: id}) {
+      console.log(`正在删除${state}===${id}`)
       return state.filter(item => item.id !== id);
     },
-    'add'(state, {payload: {name, age}}) {
-      console.log(`姓名：${name},年龄：${age}`)
-      request('http://111.230.51.71:8080/fileupload/myfile/search?page=1&limit=10').then(res => {
-        if (res.success) {
-          return state;
-        }
-      }).catch(e => {
+    addList(state) {
 
-      })
-      return [...state,{name:'michong',id:23}]
+      return [...state, {name: 'michong', id: 23}]
+    },
+    initData(state, action) {
+      console.log('初始化加载数据:'+state)
+      const products = action.payload
+      console.log(products)
+      return [...state, ...products]
     }
   }
 }

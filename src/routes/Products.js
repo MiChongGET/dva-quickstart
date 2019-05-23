@@ -1,32 +1,50 @@
-import React from 'react'
+import React, {Component} from 'react'
 import {connect} from 'dva'
 import ProductList from '../components/ProductList'
 import {Button} from 'antd'
 
-const Products = ({dispatch, products}) => {
 
-  function handleDelete(id) {
+class Products extends Component {
+  // static defaultProps {
+  //
+  // }
+  constructor(props) {
+    super(props);
+    this.state = {}
+  }
+
+  componentDidMount() {
+    const {dispatch} = this.props;
+    dispatch({type: 'products/init',total:55})
+  }
+
+  handleDelete = (id) => {
+    const {dispatch} = this.props;
     dispatch({
       type: 'products/delete',
-      payload: id
-    })
-  }
-  
-  function addList() {
-    dispatch({
-      type: 'products/add',
-      payload: {name:'michong',age:23}
+      payload: id,
+      name:'michong'
     })
   }
 
-  return (
-    <div>
-      <h2>List of Products</h2>
-      <Button onClick={addList}>添加</Button>
-      <ProductList onDelete={handleDelete}  products={products} />
+  addList = () => {
+    const {dispatch} = this.props;
+    console.log('添加list')
+    dispatch({type: 'products/addData'})
+  }
 
-    </div>
-  )
+  render() {
+    const {products} = this.props;
+    console.log('state:'+this.state)
+    return (
+      <div>
+        <h2>List of Products</h2>
+        <Button onClick={this.addList}>添加</Button>
+        <ProductList onDelete={this.handleDelete} products={products}/>
+
+      </div>
+    )
+  }
 }
 
 
