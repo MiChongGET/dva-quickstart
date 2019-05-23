@@ -9,16 +9,16 @@ class ProductList extends Component {
   //初始化
   state = {
     data: [],
-    pagination: {},
+    pagination: {
+      current:1
+    },
     loading: false,
-    page: parseInt(window.location.hash.slice(1), 0) || 1 //获取当前页面的hash值，转换为number类型
+    page:1
   };
 
-  changePage = (pagination, filters, sorter) => {
-    const pager = {...this.state.pagination};
-    const current = pagination.current
+  changePage = () => {
 
-    console.log('切换页码：' + this.state.page)
+    console.log('切换页码：' + this.state.pagination.current)
   }
 
   render() {
@@ -68,11 +68,11 @@ class ProductList extends Component {
                // total: this.state.total2,
                showSizeChanger: true,  //是否显示可以设置几条一页的选项
                // onChange: this.changePage,
-               onChange: (pageNum, pageSize) => this.onPaginationChange({ pageNum, pageSize }),   //  页码改变的回调，参数是改变后的页码及每页条数
+               onChange: this.changePage,   //  页码改变的回调，参数是改变后的页码及每页条数
                total: total,
                // pageSize: 5
              }}>
-
+        {console.log(`页码:${this.state.pagination}`)}
       </Table>
     );
   }
