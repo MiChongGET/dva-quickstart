@@ -11,23 +11,33 @@ export default {
   },
 
   effects: {
+    //初始化表格
     * init(action, {put, call, select}) {
       const page = yield select()
-      const res = yield call(getList)
+      const res = yield call(getList,{page:1,limit:10})
       console.log(page)
       yield put({type: "initData", payload: res.data, total: res.count})
     },
 
+    //添加按钮功能
     * addData(_, {put, call}) {
       console.log('正在请求数据')
       yield put({type: 'addList'})
     },
 
+    //删除功能
     * delete(action, {put}) {
       console.log(action)
       const {payload, name} = action
       console.log(`payload:${payload}===name:${name}`)
       yield put({type: 'deleteData', payload})
+    },
+    //表格分页功能
+    * changePage(action,{put,call}) {
+      console.log(`页码：${action.pager.current}`)
+      const {current,pageSize} = action.pager
+      const res =  yield call (getList,{page:current,limit:pageSize})
+      yield put({type: "initData", payload: res.data, total: res.count})
     }
   },
 
@@ -45,6 +55,9 @@ export default {
       const products = action.payload
       console.log(products)
       return {...state, products, total: action.total, current: 1}
+    },
+    changeCurrentPage(state,action){
+
     }
   }
 }

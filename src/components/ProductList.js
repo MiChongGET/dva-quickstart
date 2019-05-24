@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import {Button, Popconfirm, Table, Tag} from 'antd'
 
+import '../routes/products.css'
 
 // const ProductList = ({onDelete, products}) => {
 class ProductList extends Component {
@@ -10,17 +11,22 @@ class ProductList extends Component {
   state = {
     data: [],
     pagination: {
-      current:1
+      current: 1
     },
     loading: false,
-    page:1
+    page: 1
   };
 
-  changePage = () => {
+  //index为当前页码，pageSize为页面显示条数
+  changePage = (index, pageSize) => {
 
-    console.log('切换页码：' + this.state.pagination.current)
+    // const {dispatch} = this.props;
+    // dispatch({
+    //   type: 'products/changePage',
+    //   index:index,
+    //   pageSize:pageSize
+    // })
   }
-
   render() {
 
     const columns = [{
@@ -28,10 +34,12 @@ class ProductList extends Component {
       dataIndex: 'name',
     }, {
       title: '网络地址',
-      dataIndex: 'url'
+      dataIndex: 'url',
     }, {
       title: '上传时间',
-      dataIndex: 'createtime'
+      dataIndex: 'createtime',
+      defaultSortOrder: 'descend',
+      sort:(a,b)=>a.createtime-b.createtime
     }, {
       title: '文件大小',
       dataIndex: 'size'
@@ -60,8 +68,7 @@ class ProductList extends Component {
 
     const {total} = this.props
     return (
-      <Table dataSource={this.props.products} columns={columns} rowKey={record => record.id}
-             pagination={this.state.pagination}
+      <Table dataSource={this.props.products} columns={columns} rowKey={record => record.id} style={{width: 1200}}
              pagination={{  // 分页
                //simple: true,
                // current: this.state.current,
@@ -71,8 +78,8 @@ class ProductList extends Component {
                onChange: this.changePage,   //  页码改变的回调，参数是改变后的页码及每页条数
                total: total,
                // pageSize: 5
-             }}>
-        {console.log(`页码:${this.state.pagination}`)}
+               bordered: true,
+             }} onChange={this.props.handleTableChange}>
       </Table>
     );
   }
@@ -84,6 +91,7 @@ ProductList.propTypes = {
   onDelete: PropTypes.func.isRequired,
   products: PropTypes.array.isRequired,
   total: PropTypes.number.isRequired,
+  handleTableChange:PropTypes.func.isRequired
   // current: PropTypes.number.isRequired,
 };
 
