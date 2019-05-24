@@ -1,4 +1,4 @@
-import {getList} from '../services/listServices'
+import {getList, getSearchList} from '../services/listServices'
 
 export default {
   //namespace表示全局state上的key
@@ -7,14 +7,26 @@ export default {
   state: {
     products: [],
     total: 10,
-    page: 1
+    page: 1,
+    searchText: ''
   },
 
   effects: {
     //初始化表格
     * init(action, {put, call, select}) {
+      const {selectedKeys} = action
+
       const page = yield select()
-      const res = yield call(getList,{page:1,limit:10})
+      let res;
+      if (selectedKeys === undefined) {
+        console.log(`selectedKeys未定义`)
+        res = yield call(getList, {page: 1, limit: 10})
+      } else {
+        console.log(`selectedKeys:${selectedKeys}`)
+        console.log(`selectedKeys存在`)
+        res = yield call(getList, {page: 1, limit: 10, name: selectedKeys})
+      }
+
       console.log(page)
       yield put({type: "initData", payload: res.data, total: res.count})
     },
@@ -33,11 +45,16 @@ export default {
       yield put({type: 'deleteData', payload})
     },
     //表格分页功能
-    * changePage(action,{put,call}) {
+    * changePage(action, {put, call}) {
       console.log(`页码：${action.pager.current}`)
-      const {current,pageSize} = action.pager
-      const res =  yield call (getList,{page:current,limit:pageSize})
+      const {current, pageSize} = action.pager
+      const res = yield call(getList, {page: current, limit: pageSize})
       yield put({type: "initData", payload: res.data, total: res.count})
+    },
+    * searchByName({selectedKeys}, {call, put}) {
+      console.log(`selectedKeys:${selectedKeys}`)
+      const res = yield call(getSearchList, {page: 1, limit: 10, name: selectedKeys[0]})
+      yield put({type: "search", payload: res.data, total: res.count, searchText: selectedKeys[0]})
     }
   },
 
@@ -53,11 +70,16 @@ export default {
     initData(state, action) {
       console.log('初始化加载数据:' + state)
       const products = action.payload
-      console.log(products)
-      return {...state, products, total: action.total, current: 1}
+      return {...state, products, total: action.total, current: 1,searchText:action.searchText}
     },
-    changeCurrentPage(state,action){
+    changeCurrentPage(state, action) {
 
+    },
+    search(state, action) {
+      const {total, searchText} = action
+      const products = action.payload
+      state.products = []
+      return {...state, products, total: total, current: 1, searchText}
     }
   }
 }

@@ -15,9 +15,9 @@ class Products extends Component {
   // }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const {dispatch,selectedKeys} = this.props;
 
-    dispatch({type: 'products/init'})
+    dispatch({type: 'products/init',selectedKeys})
   }
 
   handleDelete = (id) => {
@@ -35,6 +35,11 @@ class Products extends Component {
     const {dispatch} = this.props;
     dispatch({type: 'products/changePage',pager:{current,pageSize}})
   }
+  handleSearch=(selectedKeys, confirm)=>{
+    const {dispatch} = this.props;
+    confirm()
+    dispatch({type: 'products/searchByName',selectedKeys})
+  }
 
   addList = () => {
     const {dispatch} = this.props;
@@ -43,15 +48,15 @@ class Products extends Component {
   }
 
   render() {
-    const {products, total, current} = this.props;
+    const {products, total, current,searchText} = this.props;
 
     return (
       <div >
         <h2 className={style.title}>List of Products</h2>
         <Button onClick={this.addList}>添加</Button>
         <div align='center'>
-          <ProductList onDelete={this.handleDelete} products={products} total={total} current={current}
-                       className={style.ProductList} handleTableChange={this.handleChange}/>
+          <ProductList onDelete={this.handleDelete} products={products} total={total} current={current} searchText={searchText}
+                       className={style.ProductList} handleTableChange={this.handleChange} handleSearch={this.handleSearch}/>
         </div>
       </div>
     )
@@ -59,11 +64,12 @@ class Products extends Component {
 }
 
 function mapStateToProps(state) {
-  const {products, total, current} = state.products;
+  const {products, total, current,searchText} = state.products;
   return {
     products,
     total,
     current,
+    searchText,
   };
 }
 

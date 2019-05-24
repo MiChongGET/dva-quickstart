@@ -9,5 +9,5 @@ export function getList(option) {
 }
 
 export function getSearchList(option) {
-  return request("http://111.230.51.71:8080/fileupload/myfile/search?page=1&limit=10&name=redux",option)
+  return request("http://111.230.51.71:8080/fileupload/myfile/search",option)
 }

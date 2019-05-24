@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types'
-import {Button, Popconfirm, Table, Tag} from 'antd'
+import {Button, Popconfirm, Table, Tag,Input,Icon,} from 'antd'
+import Highlighter from 'react-highlight-words';
 
 import '../routes/products.css'
 
@@ -14,7 +15,8 @@ class ProductList extends Component {
       current: 1
     },
     loading: false,
-    page: 1
+    page: 1,
+    searchText: '',
   };
 
   //index为当前页码，pageSize为页面显示条数
@@ -27,11 +29,75 @@ class ProductList extends Component {
     //   pageSize:pageSize
     // })
   }
+
+  //根据文件名称搜索
+  getColumnSearchProps = dataIndex => ({
+    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters}) => (
+      <div style={{padding: 8}}>
+        <Input
+          ref={node => {
+            this.searchInput = node;
+          }}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => this.handleSearch(selectedKeys, confirm)}
+          style={{width: 188, marginBottom: 8, display: 'block'}}
+        />
+        <Button
+          type="primary"
+          onClick={() => this.props.handleSearch(selectedKeys, confirm)}
+          icon="search"
+          size="small"
+          style={{width: 90, marginRight: 8}}
+        >
+          Search
+        </Button>
+        <Button onClick={() => this.handleReset(clearFilters)} size="small" style={{width: 90}}>
+          Reset
+        </Button>
+      </div>
+    ),
+    filterIcon: filtered => (
+      <Icon type="search" style={{color: filtered ? '#1890ff' : undefined}}/>
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(value.toLowerCase()),
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => this.searchInput.select());
+      }
+    },
+    render: text => (
+      <Highlighter
+        highlightStyle={{backgroundColor: '#ffc069', padding: 0}}
+        searchWords={[this.state.searchText]}
+        autoEscape
+        textToHighlight={text.toString()}
+      />
+    ),
+  });
+
+  handleSearch = (selectedKeys, confirm) => {
+    confirm();
+    this.setState({searchText: selectedKeys[0]});
+  };
+
+  handleReset = clearFilters => {
+    clearFilters();
+    this.setState({searchText: ''});
+  };
+
   render() {
 
     const columns = [{
       title: 'Name',
       dataIndex: 'name',
+      key: 'name',
+      ...this.getColumnSearchProps('name'),
     }, {
       title: '网络地址',
       dataIndex: 'url',
@@ -39,7 +105,8 @@ class ProductList extends Component {
       title: '上传时间',
       dataIndex: 'createtime',
       defaultSortOrder: 'descend',
-      sort:(a,b)=>a.createtime-b.createtime
+      key: 'createtime',
+      sorter: (a, b) => Date.parse(a.createtime) - Date.parse(b.createtime)
     }, {
       title: '文件大小',
       dataIndex: 'size'
@@ -79,6 +146,7 @@ class ProductList extends Component {
                total: total,
                // pageSize: 5
                bordered: true,
+               loading:true
              }} onChange={this.props.handleTableChange}>
       </Table>
     );
@@ -91,7 +159,8 @@ ProductList.propTypes = {
   onDelete: PropTypes.func.isRequired,
   products: PropTypes.array.isRequired,
   total: PropTypes.number.isRequired,
-  handleTableChange:PropTypes.func.isRequired
+  handleTableChange: PropTypes.func.isRequired,
+  handleSearch:PropTypes.func.isRequired
   // current: PropTypes.number.isRequired,
 };
 
