@@ -28,7 +28,7 @@ export default {
       }
 
       console.log(page)
-      yield put({type: "initData", payload: res.data, total: res.count})
+      yield put({type: "initListData", payload: res.data, total: res.count})
     },
 
     //添加按钮功能
@@ -51,6 +51,7 @@ export default {
       const res = yield call(getList, {page: current, limit: pageSize})
       yield put({type: "initData", payload: res.data, total: res.count})
     },
+    //搜索
     * searchByName({selectedKeys}, {call, put}) {
       console.log(`selectedKeys:${selectedKeys}`)
       const res = yield call(getSearchList, {page: 1, limit: 10, name: selectedKeys[0]})
@@ -67,7 +68,7 @@ export default {
     addList(state) {
       return [...state, {name: 'michong', id: 23}]
     },
-    initData(state, action) {
+    initListData(state, action) {
       console.log('初始化加载数据:' + state)
       const products = action.payload
       return {...state, products, total: action.total, current: 1,searchText:action.searchText}

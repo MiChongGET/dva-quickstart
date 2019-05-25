@@ -41,7 +41,7 @@ class ProductList extends Component {
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => this.handleSearch(selectedKeys, confirm)}
+          onPressEnter={() => this.props.handleSearch(selectedKeys, confirm)}
           style={{width: 188, marginBottom: 8, display: 'block'}}
         />
         <Button
@@ -61,11 +61,6 @@ class ProductList extends Component {
     filterIcon: filtered => (
       <Icon type="search" style={{color: filtered ? '#1890ff' : undefined}}/>
     ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        .toString()
-        .toLowerCase()
-        .includes(value.toLowerCase()),
     onFilterDropdownVisibleChange: visible => {
       if (visible) {
         setTimeout(() => this.searchInput.select());
@@ -146,7 +141,7 @@ class ProductList extends Component {
                total: total,
                // pageSize: 5
                bordered: true,
-               loading:true
+               loading:this.state.loading
              }} onChange={this.props.handleTableChange}>
       </Table>
     );

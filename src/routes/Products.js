@@ -16,8 +16,8 @@ class Products extends Component {
 
   componentDidMount() {
     const {dispatch,selectedKeys} = this.props;
-
     dispatch({type: 'products/init',selectedKeys})
+    console.log('初始化列表！！！')
   }
 
   handleDelete = (id) => {
